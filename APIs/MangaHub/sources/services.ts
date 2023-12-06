@@ -1,8 +1,17 @@
 import { LerMangaSource } from ".";
 import { IMangaDetails } from "../entities/manga/entities";
 import puppeteer, { Browser } from "puppeteer";
+import { AnimesBrSource } from "./anime/AnimesBrSource";
 
 abstract class Source {
+   public readonly browserHandler: BrowserHandler;
+   public readonly url: string;
+
+   constructor(browser: BrowserHandler, url: string) {
+      this.browserHandler = browser;
+      this.url = url;
+   }
+
    public abstract getQuery(query: string): string;
    public abstract search(query: string): Promise<IMangaDetails>;
 
@@ -37,7 +46,7 @@ class SourceHandler {
 const browserHandler = new BrowserHandler();
 
 const currentMangaSource = new LerMangaSource(browserHandler);
-const currentAnimeSource = new LerMangaSource(browserHandler);
+const currentAnimeSource = new AnimesBrSource(browserHandler);
 
 const mangaSourceHandler = new SourceHandler(currentMangaSource);
 const animeSourceHandler = new SourceHandler(currentAnimeSource);

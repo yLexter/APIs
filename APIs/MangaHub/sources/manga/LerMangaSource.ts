@@ -4,13 +4,8 @@ import { Source } from "../";
 import { BrowserHandler } from "../";
 
 export class LerMangaSource extends Source {
-   public readonly url: string;
-   public readonly browserHandler: BrowserHandler;
-
    constructor(browserHandler: BrowserHandler) {
-      super();
-      this.url = "https://lermanga.org";
-      this.browserHandler = browserHandler;
+      super(browserHandler, "https://lermanga.org");
    }
 
    sanitizeMangaObject(mangaObject: IMangaResponse): IMangaDetails {
