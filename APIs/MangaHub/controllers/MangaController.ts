@@ -1,9 +1,9 @@
 import express, { Request, Response } from "express";
-import { mangaSourceHandler } from "../../sources/manga";
+import { mangaSourceHandler } from "../sources";
 
 const mangaRouter = express.Router();
 
-mangaRouter.get("/manga/:query", async (req: Request, res: Response) => {
+mangaRouter.get("/about/:query", async (req: Request, res: Response) => {
    try {
       const mangaQuery = req.params.query;
       const data = await mangaSourceHandler.search(mangaQuery);

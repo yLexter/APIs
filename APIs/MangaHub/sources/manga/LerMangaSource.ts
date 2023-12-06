@@ -1,9 +1,9 @@
 import { Browser } from "puppeteer";
 import { IMangaDetails, IMangaResponse } from "../../entities/manga/entities";
-import { MangaSource } from "./interfaces";
-import { BrowserHandler } from "./MangaSource";
+import { Source } from "../";
+import { BrowserHandler } from "../";
 
-export class LerMangaSource extends MangaSource {
+export class LerMangaSource extends Source {
    public readonly url: string;
    public readonly browserHandler: BrowserHandler;
 
