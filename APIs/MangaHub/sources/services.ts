@@ -1,7 +1,7 @@
 import { LerMangaSource } from ".";
 import { IMangaDetails } from "../entities/manga/entities";
 import puppeteer, { Browser } from "puppeteer";
-import { AnimesBrSource } from "./anime/AnimesBrSource";
+import { AnimesVisionSource } from "./anime/AnimesBrSource";
 
 abstract class Source {
    public readonly browserHandler: BrowserHandler;
@@ -46,7 +46,7 @@ class SourceHandler {
 const browserHandler = new BrowserHandler();
 
 const currentMangaSource = new LerMangaSource(browserHandler);
-const currentAnimeSource = new AnimesBrSource(browserHandler);
+const currentAnimeSource = new AnimesVisionSource(browserHandler);
 
 const mangaSourceHandler = new SourceHandler(currentMangaSource);
 const animeSourceHandler = new SourceHandler(currentAnimeSource);
