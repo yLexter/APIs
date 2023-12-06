@@ -1,17 +1,15 @@
 {
    "compilerOptions": {
-      "target": "es5",
+      "allowSyntheticDefaultImports": true,
+      "target": "ES2016",
       "lib": ["dom", "dom.iterable", "esnext"],
       "allowJs": true,
       "skipLibCheck": true,
       "strict": true,
       "forceConsistentCasingInFileNames": true,
       "noEmit": true,
-      "esModuleInterop": true,
-      "resolveJsonModule": true,
-      "isolatedModules": true,
-      "jsx": "preserve",
-      "incremental": true,
+      "module": "Node16",
+      "moduleResolution": "Node16",
       "paths": {
          "@/*": ["./*"]
       }
