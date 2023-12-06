@@ -1,6 +1,17 @@
 import { LerMangaSource } from "./LerMangaSource";
 import { IMangaSource } from "./interfaces";
-import puppeteer from "puppeteer";
+import puppeteer, { Browser } from "puppeteer";
+
+export class BrowserHandler {
+   private static browser: Browser;
+
+   static async getBrowser() {
+      if (!BrowserHandler.browser)
+         BrowserHandler.browser = await puppeteer.launch();
+
+      return BrowserHandler.browser;
+   }
+}
 
 class MangaSource {
    constructor(private mangaSource: IMangaSource) {}
@@ -10,7 +21,7 @@ class MangaSource {
    }
 }
 
-const currentMangaSource = new LerMangaSource(puppeteer);
+const currentMangaSource = new LerMangaSource(BrowserHandler);
 const mangaSource = new MangaSource(currentMangaSource);
 
 export { mangaSource };

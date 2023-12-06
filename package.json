@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-nose ./APIs/MangaHub/index.ts",
+    "dev": "ts-node ./APIs/MangaHub/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
