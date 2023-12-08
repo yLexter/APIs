@@ -1,7 +1,7 @@
 import { LerMangaSource } from ".";
 import { IMangaDetails } from "../entities/manga/entities";
 import puppeteer, { Browser } from "puppeteer";
-import { AnimesVisionSource } from "./anime/AnimesBrSource";
+import { AnimesVisionSource } from "./anime/AnimesVisionSource";
 
 abstract class Source {
    public readonly browserHandler: BrowserHandler;
