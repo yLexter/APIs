@@ -1,10 +1,9 @@
 import { error } from "console";
-import { BrowserHandler, Source } from "..";
+import { BrowserHandler, Source } from "../services";
 import {
-   IAnimeDetails,
+   IAnimeMangaDetails,
    IAnimeVisionDetails,
    IAnimeVisionResponse,
-   IMangaDetails,
 } from "../../entities";
 
 class AnimesVisionSource extends Source {
@@ -15,36 +14,91 @@ class AnimesVisionSource extends Source {
    public getQuery(query: string): string {
       const querySanitized = query.replace(" ", "+");
 
-      return `$${this.url}search?nome=${querySanitized}`;
+      return `${this.url}search?nome=${querySanitized}`;
    }
 
-   public sanitizeData(data: IAnimeVisionResponse): IAnimeVisionDetails {
+   private assembleResponse(data: IAnimeVisionResponse): IAnimeVisionDetails {
+      return {
+         name: data.name,
+         description: data.description,
+         genres:
+            data.moreInfo?.find((info) => info[0] === "Gêneros:")?.slice(1) ||
+            [],
+         totalEps: parseInt(
+            data.stats
+               ?.find((stat) => stat.startsWith("Episódios"))
+               ?.split(" ")[1] || "0",
+            10
+         ),
+         age: parseInt(
+            data.stats?.find((stat) => stat.startsWith("+"))?.substring(1) ||
+               "0",
+            10
+         ),
+         season:
+            data.moreInfo?.find((info) => info[0] === "Temporada:")?.[1] || "",
+         status:
+            data.moreInfo?.find((info) => info[0] === "Status:")?.[1] || "",
+         epDuration:
+            data.stats?.find((stat) => stat.endsWith("min por ep")) || "",
+         producers:
+            data.moreInfo
+               ?.find((info) => info[0] === "Produtores:")
+               ?.slice(1) || [],
+         studies:
+            data.moreInfo?.find((info) => info[0] === "Estúdios:")?.slice(1) ||
+            [],
+      };
+   }
+
+   private sanitizeData(data: IAnimeVisionResponse) {
       const sanitizedData: IAnimeVisionResponse = {
-         name:  null,
+         name: null,
          description: null,
          stats: null,
          moreInfo: null,
-       };
-     
-       sanitizedData.description = data.description?.replace(/<span class="btn-more-desc less">- Menos<\/span>(\s*\[.*?\])?$/, '').trim() || undefined;
-       sanitizedData.stats = data.stats?.map((status) => status.replace(/<\/?[^>]+(>|$)/g, '').trim()) || null;   .
-       sanitizedData.moreInfo = data.moreInfo?.map((info) => {
-         if (!info)
-            return null
+      };
 
-         if (info?.length === 2) {
-           return info.map((item) => item.replace(/<\/?[^>]+(>|$)/g, '').trim()) || null;
-         } else if (info.length > 2) {
-           return [info[0], ...info.slice(1).map((item) => item.replace(/<\/?[^>]+(>|$)/g, '').trim())] || null;
-         }
-         return null;
-       });
-     
-       return sanitizedData;
+      sanitizedData.name = data.name;
+
+      sanitizedData.description =
+         data.description
+            ?.replace(
+               /<span class="btn-more-desc less">- Menos<\/span>(\s*\[.*?\])?$/,
+               ""
+            )
+            .trim() || null;
+      sanitizedData.stats =
+         data.stats?.map((status) =>
+            status.replace(/<\/?[^>]+(>|$)/g, "").trim()
+         ) || null;
+      sanitizedData.moreInfo =
+         data.moreInfo?.map((info) => {
+            if (info?.length === 2) {
+               return info.map((item) =>
+                  item?.replace(/<\/?[^>]+(>|$)/g, "").trim()
+               );
+            } else if (info.length > 2) {
+               return (
+                  [
+                     info[0],
+                     ...info
+                        .slice(1)
+                        .map((item) =>
+                           item?.replace(/<\/?[^>]+(>|$)/g, "").trim()
+                        ),
+                  ] || ""
+               );
+            } else {
+               return info;
+            }
+         }) || null;
+
+      return sanitizedData;
    }
 
-   public async fetchData(query: string): Promise<IAnimeVisionResponse> {
-      const url = `https://animes.vision/search?nome=jujutsu+kaisen`;
+   private async fetchData(query: string): Promise<IAnimeVisionResponse> {
+      const url = this.getQuery(query);
       const browser = await this.browserHandler.getBrowser();
       const page = await browser.newPage();
 
@@ -53,8 +107,7 @@ class AnimesVisionSource extends Source {
       const results = await page.evaluate(() => {
          const items = [...document.querySelectorAll(".flw-item")];
 
-         if (items.length == 0) 
-            throw new Error("Not Found Anime");
+         if (items.length == 0) throw new Error("Not Found Anime");
 
          return items.map((item) => {
             const tagAnchor = item.querySelector("a.dynamic-name");
@@ -74,9 +127,7 @@ class AnimesVisionSource extends Source {
       const name = await page.evaluate(() => {
          const h2 = document.querySelector("h2.film-name");
 
-         if (!h2) return null;
-
-         return h2.innerHTML;
+         return h2 && h2.innerHTML;
       });
 
       const description = await page.evaluate(() => {
@@ -84,7 +135,11 @@ class AnimesVisionSource extends Source {
 
          if (!data) return null;
 
-         return data.querySelector("div")?.innerHTML;
+         const div = data.querySelector("div");
+
+         if (!div) throw new Error("Div description not found");
+
+         return div.innerHTML;
       });
 
       const stats = await page.evaluate(() => {
@@ -113,7 +168,7 @@ class AnimesVisionSource extends Source {
          return childrens.map((children) => {
             const spans = [...children.querySelectorAll("span, a")];
 
-            if (!spans) return null;
+            if (!spans) return [];
 
             return spans.map((span) => span.innerHTML);
          });
@@ -127,8 +182,12 @@ class AnimesVisionSource extends Source {
       };
    }
 
-   public async search(query: string): Promise<IMangaDetails> {
+   public async search(query: string): Promise<IAnimeMangaDetails> {
       const data = await this.fetchData(query);
+      const sanitizeData = this.sanitizeData(data);
+      const dataFormatted = this.assembleResponse(sanitizeData);
+
+      return dataFormatted;
    }
 }
 

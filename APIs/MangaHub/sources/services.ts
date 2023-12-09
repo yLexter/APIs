@@ -1,7 +1,5 @@
-import { LerMangaSource } from ".";
-import { IMangaDetails } from "../entities/manga/entities";
 import puppeteer, { Browser } from "puppeteer";
-import { AnimesVisionSource } from "./anime/AnimesVisionSource";
+import { IAnimeMangaDetails } from "../entities";
 
 abstract class Source {
    public readonly browserHandler: BrowserHandler;
@@ -13,7 +11,7 @@ abstract class Source {
    }
 
    public abstract getQuery(query: string): string;
-   public abstract search(query: string): Promise<IMangaDetails>;
+   public abstract search(query: string): Promise<IAnimeMangaDetails>;
 
    public async sleep(seconds: number) {
       return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
@@ -28,8 +26,7 @@ class BrowserHandler {
    }
 
    async getBrowser() {
-      if (!this.browser)
-         this.browser = await puppeteer.launch({ headless: true });
+      if (!this.browser) this.browser = await puppeteer.launch();
 
       return this.browser;
    }
@@ -43,12 +40,4 @@ class SourceHandler {
    }
 }
 
-const browserHandler = new BrowserHandler();
-
-const currentMangaSource = new LerMangaSource(browserHandler);
-const currentAnimeSource = new AnimesVisionSource(browserHandler);
-
-const mangaSourceHandler = new SourceHandler(currentMangaSource);
-const animeSourceHandler = new SourceHandler(currentAnimeSource);
-
-export { mangaSourceHandler, animeSourceHandler, BrowserHandler, Source };
+export { BrowserHandler, Source, SourceHandler };

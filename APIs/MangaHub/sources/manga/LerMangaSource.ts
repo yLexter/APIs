@@ -1,34 +1,33 @@
 import { Browser } from "puppeteer";
-import { IMangaDetails, IMangaResponse } from "../../entities/manga/entities";
-import { Source } from "../";
+import { IMangaDetails, IMangaResponse } from "../../entities/mangas";
+import { Source } from "../services";
 import { BrowserHandler } from "../";
+import { IAnimeMangaDetails } from "../../entities";
 
 export class LerMangaSource extends Source {
    constructor(browserHandler: BrowserHandler) {
       super(browserHandler, "https://lermanga.org");
    }
 
-   sanitizeMangaObject(mangaObject: IMangaResponse): IMangaDetails {
+   private sanitizeMangaObject(mangaObject: IMangaResponse): IMangaDetails {
       const sanitizedObject = { ...mangaObject };
 
-      sanitizedObject.name = sanitizedObject.name?.replace(/^Ler Mangá /, "");
-      sanitizedObject.genres = sanitizedObject.genres?.map((genre) =>
-         genre.replace(/\n/g, "")
-      );
-      sanitizedObject.description = sanitizedObject.description?.replace(
-         /<[^>]*>/g,
-         ""
-      );
-      sanitizedObject.rating = sanitizedObject.rating?.replace(/\n/g, "");
-      sanitizedObject.totalChapters = sanitizedObject.totalChapters?.replace(
-         /\D/g,
-         ""
-      );
+      sanitizedObject.name =
+         sanitizedObject.name?.replace(/^Ler Mangá /, "") || null;
+      sanitizedObject.genres =
+         sanitizedObject.genres?.map((genre) => genre.replace(/\n/g, "")) ||
+         null;
+      sanitizedObject.description =
+         sanitizedObject.description?.replace(/<[^>]*>/g, "") || null;
+      sanitizedObject.rating =
+         sanitizedObject.rating?.replace(/\n/g, "") || null;
+      sanitizedObject.totalChapters =
+         sanitizedObject.totalChapters?.replace(/\D/g, "") || null;
 
       return sanitizedObject;
    }
 
-   async fetchData(query: string): Promise<IMangaResponse> {
+   private async fetchData(query: string): Promise<IMangaResponse> {
       const regexNotFound = /Nenhum|Nenhum resultado/gi;
       const regex = /^https:\/\/lermanga\.org\/mangas\/[^/]+\/$/;
       const browser = await this.browserHandler.getBrowser();
@@ -67,8 +66,13 @@ export class LerMangaSource extends Source {
 
          if (!tagsAnchor.length) return null;
 
-         return tagsAnchor.find((a) => onlyNumbers.test(a.innerHTML))
-            ?.innerHTML;
+         const anchorYear = tagsAnchor.find((a) =>
+            onlyNumbers.test(a.innerHTML)
+         );
+
+         if (!anchorYear) return null;
+
+         return anchorYear.innerHTML;
       });
 
       const genreList = await page.evaluate(() => {
@@ -88,13 +92,15 @@ export class LerMangaSource extends Source {
 
          if (!title) return null;
 
-         return title.querySelector("a")?.innerHTML;
+         const anchorTitle = title.querySelector("a");
+
+         return anchorTitle && anchorTitle.innerHTML;
       });
 
       const rating = await page.evaluate(() => {
          const data = document.querySelector(".kksr-legend");
 
-         return data?.innerHTML;
+         return data && data.innerHTML;
       });
 
       const description = await page.evaluate(() => {
@@ -102,7 +108,9 @@ export class LerMangaSource extends Source {
 
          if (!data) return null;
 
-         return data.querySelector("p")?.innerHTML;
+         const paragraphElement = data.querySelector("p");
+
+         return paragraphElement && paragraphElement.innerHTML;
       });
 
       const totalChapters = await page.evaluate(() => {
@@ -118,7 +126,9 @@ export class LerMangaSource extends Source {
 
          if (!data) return null;
 
-         return data.querySelector("img")?.currentSrc;
+         const imageElement = data.querySelector("img");
+
+         return imageElement && imageElement.currentSrc;
       });
 
       return {
@@ -132,7 +142,7 @@ export class LerMangaSource extends Source {
       };
    }
 
-   async search(query: string): Promise<IMangaDetails> {
+   async search(query: string): Promise<IAnimeMangaDetails> {
       const data = await this.fetchData(query);
       const dataSanitized = this.sanitizeMangaObject(data);
 
