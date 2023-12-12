@@ -1,12 +1,13 @@
 import express, { Request, Response } from "express";
-import { animeSourceHandler } from "../sources";
+import { app } from "../sources";
 
 const animesRouter = express.Router();
 
 animesRouter.get("/about/:query", async (req: Request, res: Response) => {
    try {
+      const site = req.headers["url"] as string | undefined;
       const animeQuery = req.params.query;
-      const data = await animeSourceHandler.search(animeQuery);
+      const data = await app.anime.search(animeQuery, site);
 
       res.status(200).json({
          data: data,

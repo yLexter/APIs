@@ -1,12 +1,26 @@
-import { BrowserHandler, LerMangaSource, SourceHandler } from ".";
+import {
+   AnimeHandler,
+   AnimeMangaHandler,
+   BrowserHandler,
+   LerMangaSource,
+   MangaHandler,
+} from ".";
 import { AnimesVisionSource } from "./anime/AnimesVisionSource";
 
 const browserHandler = new BrowserHandler();
 
-const currentMangaSource = new LerMangaSource(browserHandler);
-const currentAnimeSource = new AnimesVisionSource(browserHandler);
+const defaultMangaSource = new LerMangaSource(browserHandler);
+const defaultAnimeSource = new AnimesVisionSource(browserHandler);
 
-const animeSourceHandler = new SourceHandler(currentAnimeSource);
-const mangaSourceHandler = new SourceHandler(currentMangaSource);
+const animeSourceHandler = new AnimeHandler(
+   [defaultAnimeSource],
+   defaultAnimeSource
+);
+const mangaSourceHandler = new MangaHandler(
+   [defaultMangaSource],
+   defaultMangaSource
+);
 
-export { animeSourceHandler, mangaSourceHandler };
+const app = new AnimeMangaHandler(animeSourceHandler, mangaSourceHandler);
+
+export { app };

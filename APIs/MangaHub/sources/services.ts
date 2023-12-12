@@ -14,7 +14,7 @@ abstract class Source {
    public abstract search(query: string): Promise<IAnimeMangaDetails>;
 
    public async sleep(seconds: number) {
-      return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+      return new Promise(resolve => setTimeout(resolve, seconds * 1000));
    }
 }
 
@@ -23,6 +23,11 @@ class BrowserHandler {
 
    constructor() {
       this.browser = null;
+      this.setBrowser();
+   }
+
+   async setBrowser() {
+      this.browser = await puppeteer.launch();
    }
 
    async getBrowser() {
@@ -32,12 +37,48 @@ class BrowserHandler {
    }
 }
 
-class SourceHandler {
-   constructor(private mangaSource: Source) {}
+abstract class SourceHandler {
+   public constructor(
+      private listAnimeSource: Source[],
+      private sourceDefault: Source
+   ) {}
 
-   async search(query: string) {
-      return this.mangaSource.search(query);
+   public getSourceByUrl(url?: string) {
+      if (!url) return this.sourceDefault;
+
+      const source = this.listAnimeSource.find(
+         source => source.url === url.toLowerCase()
+      );
+
+      if (!source)
+         throw new Error(
+            "URL de site inválida! Verifique a lista de sites disponíveis no repositório do github: https://github.com/yLexter/APIs"
+         );
+
+      return source;
+   }
+
+   public search(query: string, url?: string) {
+      const source = this.getSourceByUrl(url);
+
+      return source.search(query);
    }
 }
 
-export { BrowserHandler, Source, SourceHandler };
+class AnimeHandler extends SourceHandler {}
+class MangaHandler extends SourceHandler {}
+
+class AnimeMangaHandler {
+   constructor(
+      public readonly anime: AnimeHandler,
+      public readonly manga: MangaHandler
+   ) {}
+}
+
+export {
+   BrowserHandler,
+   Source,
+   AnimeHandler,
+   MangaHandler,
+   AnimeMangaHandler,
+};
