@@ -22,31 +22,27 @@ class AnimesVisionSource extends Source {
          name: data.name,
          description: data.description,
          genres:
-            data.moreInfo?.find((info) => info[0] === "Gêneros:")?.slice(1) ||
-            [],
+            data.moreInfo?.find(info => info[0] === "Gêneros:")?.slice(1) || [],
          totalEps: parseInt(
             data.stats
-               ?.find((stat) => stat.startsWith("Episódios"))
+               ?.find(stat => stat.startsWith("Episódios"))
                ?.split(" ")[1] || "0",
             10
          ),
          age: parseInt(
-            data.stats?.find((stat) => stat.startsWith("+"))?.substring(1) ||
-               "0",
+            data.stats?.find(stat => stat.startsWith("+"))?.substring(1) || "0",
             10
          ),
          season:
-            data.moreInfo?.find((info) => info[0] === "Temporada:")?.[1] || "",
-         status:
-            data.moreInfo?.find((info) => info[0] === "Status:")?.[1] || "",
+            data.moreInfo?.find(info => info[0] === "Temporada:")?.[1] || "",
+         status: data.moreInfo?.find(info => info[0] === "Status:")?.[1] || "",
          epDuration:
-            data.stats?.find((stat) => stat.endsWith("min por ep")) || "",
+            data.stats?.find(stat => stat.endsWith("min por ep")) || "",
          producers:
-            data.moreInfo
-               ?.find((info) => info[0] === "Produtores:")
-               ?.slice(1) || [],
+            data.moreInfo?.find(info => info[0] === "Produtores:")?.slice(1) ||
+            [],
          studies:
-            data.moreInfo?.find((info) => info[0] === "Estúdios:")?.slice(1) ||
+            data.moreInfo?.find(info => info[0] === "Estúdios:")?.slice(1) ||
             [],
       };
    }
@@ -69,13 +65,13 @@ class AnimesVisionSource extends Source {
             )
             .trim() || null;
       sanitizedData.stats =
-         data.stats?.map((status) =>
+         data.stats?.map(status =>
             status.replace(/<\/?[^>]+(>|$)/g, "").trim()
          ) || null;
       sanitizedData.moreInfo =
-         data.moreInfo?.map((info) => {
+         data.moreInfo?.map(info => {
             if (info?.length === 2) {
-               return info.map((item) =>
+               return info.map(item =>
                   item?.replace(/<\/?[^>]+(>|$)/g, "").trim()
                );
             } else if (info.length > 2) {
@@ -84,7 +80,7 @@ class AnimesVisionSource extends Source {
                      info[0],
                      ...info
                         .slice(1)
-                        .map((item) =>
+                        .map(item =>
                            item?.replace(/<\/?[^>]+(>|$)/g, "").trim()
                         ),
                   ] || ""
@@ -109,7 +105,7 @@ class AnimesVisionSource extends Source {
 
          if (items.length == 0) throw new Error("Not Found Anime");
 
-         return items.map((item) => {
+         return items.map(item => {
             const tagAnchor = item.querySelector("a.dynamic-name");
 
             if (tagAnchor instanceof HTMLAnchorElement) return tagAnchor.href;
@@ -151,7 +147,7 @@ class AnimesVisionSource extends Source {
 
          if (!spans) return null;
 
-         return spans.map((span) => span.innerHTML);
+         return spans.map(span => span.innerHTML);
       });
 
       const moreInfo = await page.evaluate(() => {
@@ -165,12 +161,12 @@ class AnimesVisionSource extends Source {
 
          if (!childrens.length) return null;
 
-         return childrens.map((children) => {
+         return childrens.map(children => {
             const spans = [...children.querySelectorAll("span, a")];
 
             if (!spans) return [];
 
-            return spans.map((span) => span.innerHTML);
+            return spans.map(span => span.innerHTML);
          });
       });
 

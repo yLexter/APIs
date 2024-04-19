@@ -1,7 +1,3 @@
-# Multi-API Repository
-
-Bem-vindo ao repositório APIs! Este repositório é uma coleção de APIs destinadas a diversas causas. Cada API dentro deste repositório oferece funcionalidades específicas. Até o momento, algumas das APIs incluídas são:
-
 # MangaHub API (Em Construção)
 
 A MangaHub API é uma poderosa API desenvolvida em Express.js e TypeScript que oferece acesso a informações detalhadas sobre animes e mangás provenientes de diversos sites. Com essa API, os desenvolvedores podem integrar facilmente dados relevantes de diferentes fontes em suas aplicações, simplificando o processo de obtenção de informações sobre seus animes e mangás favoritos.
@@ -46,6 +42,7 @@ A MangaHub API é uma poderosa API desenvolvida em Express.js e TypeScript que o
 
 -  **Endpoint:** `GET /animes/:query`
 -  **Descrição:** Retorna informações detalhadas sobre um anime com base na consulta fornecida.
+-  **Url:** https://animes.vision
 -  **Exemplo de Resposta:**
 
    ```json
