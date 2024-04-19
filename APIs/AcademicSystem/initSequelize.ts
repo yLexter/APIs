@@ -4,213 +4,215 @@ const { STRING, FLOAT, DATE, INTEGER, ENUM, BOOLEAN } = DataTypes;
 
 const sequelize = new Sequelize("sqlite::memory:");
 
-const Person = sequelize.define("Person", {
-   name: {
-      type: STRING,
-   },
-   lastName: {
-      type: STRING,
-   },
-   cpf: {
-      type: STRING,
-      primaryKey: true,
-   },
-   dateOfBirth: {
-      type: DATE,
-   },
-   password: {
-      type: STRING,
-   },
-});
-
-const Student = sequelize.define("Student", {
-   CPF_Person: {
-      type: STRING,
-      references: {
-         model: "Person",
-         key: "cpf",
+const Person = sequelize.define(
+   "Person",
+   {
+      name: {
+         type: STRING,
+      },
+      lastName: {
+         type: STRING,
+      },
+      cpf: {
+         type: STRING,
+         primaryKey: true,
+      },
+      dateOfBirth: {
+         type: DATE,
+      },
+      password: {
+         type: STRING,
       },
    },
+   { tableName: "Person" }
+);
 
-   id: {
-      type: STRING,
-      primaryKey: true,
-   },
-});
-
-const StudentClass = sequelize.define("StudentClass", {
-   note1: {
-      type: FLOAT,
-   },
-   note2: {
-      type: FLOAT,
-   },
-   finalExameScore: {
-      type: FLOAT,
-   },
-   status: {
-      type: ENUM("Falied", "Studying", "Approved"),
-   },
-   studentId: {
-      type: STRING,
-      primaryKey: true,
-      references: {
-         model: "Student",
-         key: "id",
+const Student = sequelize.define(
+   "Student",
+   {
+      id: {
+         type: STRING,
+         primaryKey: true,
       },
    },
-   absences: {
-      type: INTEGER,
-   },
-   period: {
-      type: STRING,
-   },
-   college_class_id: {
-      type: STRING,
-      primaryKey: true,
-   },
-});
+   { tableName: "Student" }
+);
 
-const Teacher = sequelize.define("Teacher", {
-   id: {
-      type: STRING,
-      primaryKey: true,
-   },
-   CPF_person: {
-      type: STRING,
-      references: {
-         model: "Person",
-         key: "cpf",
+const StudentClass = sequelize.define(
+   "StudentClass",
+   {
+      id: {
+         type: STRING,
+         primaryKey: true,
+      },
+      note1: {
+         type: FLOAT,
+      },
+      note2: {
+         type: FLOAT,
+      },
+      finalExameScore: {
+         type: FLOAT,
+      },
+      status: {
+         type: ENUM("Falied", "Studying", "Approved"),
+      },
+      absences: {
+         type: INTEGER,
+      },
+      period: {
+         type: STRING,
       },
    },
-});
+   { tableName: "StudentClass" }
+);
 
-const ClassTeacher = sequelize.define("ClassTeacher", {
-   id: {
-      type: STRING,
-      primaryKey: true,
-   },
-
-   subject_code: {
-      type: STRING,
-      references: {
-         model: "Subject",
-         key: "code",
+const Teacher = sequelize.define(
+   "Teacher",
+   {
+      id: {
+         type: STRING,
+         primaryKey: true,
       },
    },
+   { tableName: "Teacher" }
+);
 
-   teacher_id: {
-      type: STRING,
-      references: {
-         model: "Teacher",
-         key: "id",
+const Admin = sequelize.define(
+   "Admin",
+   {
+      id: {
+         type: STRING,
+         primaryKey: true,
       },
    },
+   { tableName: "Admin" }
+);
 
-   room_id: {
-      type: STRING,
-      references: {
-         model: "Room",
-         key: "id",
+const ClassTeacher = sequelize.define(
+   "ClassTeacher",
+   {
+      id: {
+         type: STRING,
+         primaryKey: true,
       },
    },
-});
+   { tableName: "ClassTeacher" }
+);
 
-const RegisterClass = sequelize.define("RegisterClass", {
-   id: {
-      type: STRING,
-      primaryKey: true,
-   },
-   description: {
-      type: STRING,
-   },
-   date: {
-      type: DATE,
-   },
-   class_teacher_id: {
-      type: STRING,
-      references: {
-         model: "ClassTeacher",
-         key: "id",
+const ScheduleClassTeacher = sequelize.define(
+   "ScheduleClassTeacher",
+   {
+      schedule: {
+         type: STRING,
       },
    },
-});
+   { tableName: "ScheduleClassTeacher" }
+);
 
-const StudentCallLog = sequelize.define("StudentCallLog", {
-   student_class_id: {
-      type: STRING,
-      primaryKey: true,
-      references: {
-         model: "StudentClass",
-         key: "id",
+const RegisterClass = sequelize.define(
+   "RegisterClass",
+   {
+      id: {
+         type: STRING,
+         primaryKey: true,
+      },
+      description: {
+         type: STRING,
+      },
+      date: {
+         type: DATE,
       },
    },
+   { tableName: "RegisterClass" }
+);
 
-   register_class_id: {
-      type: STRING,
-      primaryKey: true,
-      references: {
-         model: "RegisterClass",
-         key: "id",
+const StudentCallLog = sequelize.define(
+   "StudentCallLog",
+   {
+      missed: {
+         type: BOOLEAN,
+      },
+
+      justified: {
+         type: BOOLEAN,
       },
    },
+   { tableName: "StudentCallLog" }
+);
 
-   missed: {
-      type: BOOLEAN,
+const Subject = sequelize.define(
+   "Subject",
+   {
+      code: {
+         type: STRING,
+         primaryKey: true,
+      },
+      name: {
+         type: STRING,
+      },
+      hours: {
+         type: INTEGER,
+      },
    },
+   { tableName: "Subject" }
+);
 
-   justified: {
-      type: BOOLEAN,
+const Room = sequelize.define(
+   "Room",
+   {
+      name: {
+         type: STRING,
+      },
+      capacity: {
+         type: INTEGER,
+      },
+      id: {
+         type: STRING,
+         primaryKey: true,
+      },
    },
-});
+   { tableName: "Room" }
+);
 
-const Subject = sequelize.define("Subject", {
-   code: {
-      type: STRING,
-      primaryKey: true,
-   },
-   name: {
-      type: STRING,
-   },
-   hours: {
-      type: INTEGER,
-   },
-});
+// Admin Teacher and Student
+Admin.belongsTo(Person);
+Teacher.belongsTo(Person);
+Student.belongsTo(Person);
 
-const Room = sequelize.define("Room", {
-   name: {
-      type: STRING,
-   },
-   capacity: {
-      type: INTEGER,
-   },
-   id: {
-      type: STRING,
-      primaryKey: true,
-   },
-});
+// Register CLass
+StudentCallLog.belongsTo(RegisterClass);
 
-function initSequelize() {
-   sequelize
-      .sync({ force: true })
-      .then(() => {
-         console.log("Models synced with database.");
-      })
-      .catch((err: Error) => {
-         console.error("Error syncing models:", err);
-      });
-}
+// StudentCallLog
+StudentCallLog.belongsTo(StudentClass);
+
+// Class Teacher
+ClassTeacher.belongsTo(Teacher);
+
+ClassTeacher.hasMany(ScheduleClassTeacher);
+ScheduleClassTeacher.belongsTo(ClassTeacher);
+
+ClassTeacher.belongsTo(Subject);
+
+ClassTeacher.belongsToMany(Student, { through: "StudentClass" });
+Student.belongsToMany(ClassTeacher, { through: "StudentClass" });
+
+ScheduleClassTeacher.belongsTo(Room);
+
+// Student
+StudentClass.belongsTo(Student);
 
 export {
    Person,
    Student,
    StudentClass,
    Teacher,
+   Admin,
    ClassTeacher,
-   Subject,
-   Room,
+   ScheduleClassTeacher,
    RegisterClass,
    StudentCallLog,
-   initSequelize,
+   Subject,
+   Room,
    sequelize,
 };
