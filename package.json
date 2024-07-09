@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "mangaHub": "ts-node ./APIs/MangaHub/index.ts",
-    "academicSystem": "ts-node ./APIs/academicSystem/index.ts",
+    "academicSystem": "nodemon ./APIs/academicSystem/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -16,6 +16,7 @@
     "@types/node": "^20.10.3",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "nodemon": "^3.1.0",
     "puppeteer": "^21.5.2",
     "sequelize": "^6.37.3",
     "sqlite3": "^5.1.7",

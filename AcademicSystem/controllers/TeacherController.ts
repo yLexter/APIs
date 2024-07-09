@@ -1,7 +1,7 @@
 import express, { Request, Response, Router } from "express";
 
 const teacherRouter = Router();
-// Professor endpoints
+
 teacherRouter.post("/lectures", (req: Request, res: Response) => {
    // Logic to register a lecture
    res.send("Register Lecture");

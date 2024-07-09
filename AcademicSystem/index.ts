@@ -20,7 +20,6 @@ import express from "express";
 (async () => {
    await sequelize.sync({});
 
-   /*
    const models = [
       Admin,
       ClassTeacher,
@@ -40,7 +39,6 @@ import express from "express";
 
       console.log(schema);
    }
-   */
 
    await Person.create({
       name: "John",
@@ -78,11 +76,10 @@ import express from "express";
    });
 
    // depende FK
-
    await ClassTeacher.create({
       id: "1",
       TeacherId: "1",
-      SubjectId: "001",
+      SubjectCode: "001",
    });
 
    await StudentClass.create({
@@ -93,6 +90,7 @@ import express from "express";
       absences: 2,
       period: "2024/1",
       classTeacherId: "1",
+      StudentId: "1",
       id: "1",
    });
 

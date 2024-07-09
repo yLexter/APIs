@@ -3,32 +3,7 @@ import { Student, Teacher } from "../initSequelize";
 
 const adminRouter = Router();
 
-// Students endpoints
-adminRouter.get("/students", async (req: Request, res: Response) => {
-   try {
-      const students = await Student.findAll();
-
-      return res.json({
-         students: students,
-      });
-   } catch (error) {
-      const message = (error as Error).message;
-      res.json({ error: `An Error Ocorrued: ${message}` });
-   }
-});
-
-adminRouter.post("/students", (req: Request, res: Response) => {
-   // Logic to add a new student
-   res.send("Add Student");
-});
-
-adminRouter.delete("/students/:id", (req: Request, res: Response) => {
-   // Logic to remove a student by ID
-   res.send("Remove Student");
-});
-
 // Teachers Endpoints
-
 adminRouter.get("/teachers", async (req: Request, res: Response) => {
    try {
       const teachers = await Teacher.findAll();
