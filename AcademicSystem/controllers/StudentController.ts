@@ -3,76 +3,44 @@ import { Student } from "../initSequelize";
 
 const studentRouter = Router();
 
-studentRouter.get("/", async (req: Request, res: Response) => {
-   try {
-      const students = await Student.findAll({ include: { all: true } });
+studentRouter.get("/students", async (req, res) => {
+   const students = await Student.findAll({});
+   res.json(students);
+});
 
-      return res.status(200).json({
-         students: students,
-      });
-   } catch (error) {
-      const message = (error as Error).message;
-      res.status(400).json({ error: `An Error Ocorrued: ${message}` });
+studentRouter.get("/students/:id", async (req, res) => {
+   const student = await Student.findByPk(req.params.id);
+   if (student) {
+      res.json(student);
+   } else {
+      res.status(404).send("Student not found");
    }
 });
 
-studentRouter.get("/:id", async (req: Request, res: Response) => {
-   const { id } = req.params;
+studentRouter.post("/students", async (req, res) => {
+   const { id } = req.body;
+   const newStudent = await Student.create({ id });
+   res.status(201).json(newStudent);
+});
 
-   try {
-      const student = await Student.findOne({
-         where: {
-            id: id,
-         },
-         include: {
-            all: true,
-         },
-      });
+studentRouter.put("/students/:id", async (req, res) => {
+   const student = await Student.findByPk(req.params.id);
+   if (student) {
+      await student.update(req.body);
 
-      if (student == null) {
-         throw new Error("Student not found");
-      }
-
-      return res.json({
-         student: student,
-      });
-   } catch (error) {
-      const message = (error as Error).message;
-      res.status(400).json({ error: `An Error Ocorrued: ${message}` });
+      res.json(student);
+   } else {
+      res.status(404).send("Student not found");
    }
 });
 
-studentRouter.post("/", async (req: Request, res: Response) => {
-   try {
-      const student = await Student.create();
-
-      return res.json({
-         student: student,
-      });
-   } catch (error) {
-      const message = (error as Error).message;
-      res.status(400).json({ error: `An Error Ocorrued: ${message}` });
-   }
-});
-
-studentRouter.delete("/:id", async (req: Request, res: Response) => {
-   const { id } = req.params;
-
-   try {
-      const student = await Student.findOne({
-         where: {
-            id: id,
-         },
-      });
-
-      if (student == null) {
-         throw new Error("Student not found");
-      }
-
-      res.status(200).json({ sucess: "Sucess an delete student" });
-   } catch (error) {
-      const message = (error as Error).message;
-      res.status(400).json({ error: `An Error Ocorrued: ${message}` });
+studentRouter.delete("/students/:id", async (req, res) => {
+   const student = await Student.findByPk(req.params.id);
+   if (student) {
+      await student.destroy();
+      res.status(204).send();
+   } else {
+      res.status(404).send("Student not found");
    }
 });
 

@@ -1,62 +1,46 @@
 import express, { Request, Response, Router } from "express";
-import { Student, Teacher } from "../initSequelize";
+import { Admin, Student, Teacher } from "../initSequelize";
 
 const adminRouter = Router();
 
-// Teachers Endpoints
-adminRouter.get("/teachers", async (req: Request, res: Response) => {
-   try {
-      const teachers = await Teacher.findAll();
+adminRouter.get("/admins", async (req, res) => {
+   const admins = await Admin.findAll({});
+   res.json(admins);
+});
 
-      return res.json({
-         teachers: teachers,
-      });
-   } catch (error) {
-      const message = (error as Error).message;
-      res.json({ error: `An Error Ocorrued: ${message}` });
+adminRouter.get("/admins/:id", async (req, res) => {
+   const admin = await Admin.findByPk(req.params.id);
+   if (admin) {
+      res.json(admin);
+   } else {
+      res.status(404).send("Admin not found");
    }
 });
 
-adminRouter.post("/teachers", (req: Request, res: Response) => {
-   // Logic to add a new professor
-   res.send("Add Professor");
+adminRouter.post("/admins", async (req, res) => {
+   const { id, person } = req.body;
+   const newAdmin = await Admin.create({ id });
+   res.status(201).json(newAdmin);
 });
 
-adminRouter.delete("/teachers/:id", (req: Request, res: Response) => {
-   // Logic to remove a professor by ID
-   res.send("Remove Professor");
+adminRouter.put("/admins/:id", async (req, res) => {
+   const admin = await Admin.findByPk(req.params.id);
+   if (admin) {
+      await admin.update(req.body);
+      res.json(admin);
+   } else {
+      res.status(404).send("Admin not found");
+   }
 });
 
-// Class
-adminRouter.get("/classes", (req: Request, res: Response) => {
-   // Logic to view registered classes
-   res.send("View Classes");
-});
-
-adminRouter.post("/classes", (req: Request, res: Response) => {
-   // Logic to add a new class
-   res.send("Add Class");
-});
-
-adminRouter.delete("/classes/:id", (req: Request, res: Response) => {
-   // Logic to delete a class by ID
-   res.send("Delete Class");
-});
-
-// Class Teachers endpoints
-adminRouter.get("/classrooms", (req: Request, res: Response) => {
-   // Logic to view registered classrooms
-   res.send("View Classrooms");
-});
-
-adminRouter.post("/classrooms", (req: Request, res: Response) => {
-   // Logic to add a new classroom
-   res.send("Add Classroom");
-});
-
-adminRouter.get("/class-schedules", (req: Request, res: Response) => {
-   // Logic to view class schedules
-   res.send("View Class Schedules");
+adminRouter.delete("/admins/:id", async (req, res) => {
+   const admin = await Admin.findByPk(req.params.id);
+   if (admin) {
+      await admin.destroy();
+      res.status(204).send();
+   } else {
+      res.status(404).send("Admin not found");
+   }
 });
 
 export { adminRouter };

@@ -1,30 +1,47 @@
 import express, { Request, Response, Router } from "express";
+import { Person, Teacher } from "../initSequelize";
 
 const teacherRouter = Router();
 
-teacherRouter.post("/lectures", (req: Request, res: Response) => {
-   // Logic to register a lecture
-   res.send("Register Lecture");
+teacherRouter.get("/teachers", async (req, res) => {
+   const teachers = await Teacher.findAll({ include: Person });
+   res.json(teachers);
 });
 
-teacherRouter.post("/grades", (req: Request, res: Response) => {
-   // Logic to post student grades
-   res.send("Post Grades");
+teacherRouter.get("/teachers/:id", async (req, res) => {
+   const teacher = await Teacher.findByPk(req.params.id, { include: Person });
+   if (teacher) {
+      res.json(teacher);
+   } else {
+      res.status(404).send("Teacher not found");
+   }
 });
 
-teacherRouter.post("/final-grades", (req: Request, res: Response) => {
-   // Logic to post final grades of students
-   res.send("Post Final Grades");
+teacherRouter.post("/teachers", async (req, res) => {
+   const { id, person } = req.body;
+   const newTeacher = await Teacher.create({ id });
+   res.status(201).json(newTeacher);
 });
 
-teacherRouter.get("/class-report", (req: Request, res: Response) => {
-   // Logic to view a class report
-   res.send("View Class Report");
+teacherRouter.put("/teachers/:id", async (req, res) => {
+   const teacher = await Teacher.findByPk(req.params.id);
+
+   if (teacher) {
+      await teacher.update(req.body);
+      res.json(teacher);
+   } else {
+      res.status(404).send("Teacher not found");
+   }
 });
 
-teacherRouter.get("/lecture-records", (req: Request, res: Response) => {
-   // Logic to view lecture records
-   res.send("View Lecture Records");
+teacherRouter.delete("/teachers/:id", async (req, res) => {
+   const teacher = await Teacher.findByPk(req.params.id);
+   if (teacher) {
+      await teacher.destroy();
+      res.status(204).send();
+   } else {
+      res.status(404).send("Teacher not found");
+   }
 });
 
 export { teacherRouter };

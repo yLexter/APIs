@@ -2,6 +2,7 @@ import { Sequelize, DataTypes } from "sequelize";
 
 const { STRING, FLOAT, DATE, INTEGER, ENUM, BOOLEAN } = DataTypes;
 
+// Change later...
 const sequelize = new Sequelize("sqlite::memory:");
 
 const Person = sequelize.define(
